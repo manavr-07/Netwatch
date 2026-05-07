@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NetWatch — Network Anomaly Detection</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/dashboard.css" />
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-left">
+    <div class="brand">
+      <span class="brand-mark"></span>
+      <span class="brand-name">NetWatch</span>
+    </div>
+    <span class="brand-subtitle">Explainable Network Anomaly Detection</span>
+  </div>
+  <div class="header-right">
+    <div class="segment-badge" id="segment-badge">—</div>
+    <div class="quality-badge" id="quality-badge" title="Baseline quality">Baseline: —</div>
+    <button class="detection-btn" id="detection-btn" onclick="toggleDetection()">
+        <span id="detection-btn-icon">⏸</span>
+        <span id="detection-btn-label">Pause</span>
+      </button>
+    <div class="status-indicator">
+      <span class="status-dot" id="status-dot"></span>
+      <span class="status-text" id="status-text">Connecting...</span>
+    </div>
+    <div class="warmup-bar-wrap" id="warmup-wrap" style="display:none">
+      <span class="warmup-label">Warm-up</span>
+      <div class="warmup-bar-track">
+        <div class="warmup-bar-fill" id="warmup-bar"></div>
+      </div>
+      <span class="warmup-pct" id="warmup-pct">0%</span>
+    </div>
+  </div>
+</header>
+
+<!-- STATS ROW -->
+<section class="stats-row">
+  <div class="stat-card">
+    <div class="stat-label">Total Flows</div>
+    <div class="stat-value" id="stat-flows">—</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Total Anomalies</div>
+    <div class="stat-value accent" id="stat-anomalies">—</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Active Incidents</div>
+    <div class="stat-value" id="stat-incidents">—</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Detection Rate</div>
+    <div class="stat-value" id="stat-rate">—</div>
+  </div>
+</section>
+
+<!-- CHARTS ROW -->
+<section class="charts-row">
+  <div class="chart-panel">
+    <div class="panel-header">
+      <span class="panel-title">Anomaly Trend</span>
+      <span class="panel-meta">per minute, last 60 min</span>
+    </div>
+    <div class="chart-wrap"><canvas id="trend-chart"></canvas></div>
+  </div>
+  <div class="chart-panel chart-panel--sm">
+    <div class="panel-header">
+      <span class="panel-title">Severity Distribution</span>
+      <span class="panel-meta">all time</span>
+    </div>
+    <div class="chart-wrap chart-wrap--pie">
+      <canvas id="severity-chart"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- INCIDENTS PANEL -->
+<section class="incidents-section" id="incidents-section" style="display:none">
+  <div class="feed-header">
+    <span class="panel-title">Active Incidents
+      <span class="incident-count-badge" id="incident-count">0</span>
+    </span>
+    <span class="panel-meta">correlated anomaly groups</span>
+  </div>
+  <div class="incident-list" id="incident-list"></div>
+</section>
+
+<!-- ANOMALY FEED -->
+<section class="feed-section">
+  <div class="feed-header">
+    <span class="panel-title">Live Anomaly Feed</span>
+    <div class="feed-controls">
+      <label class="filter-label">Filter:
+        <select id="severity-filter" class="filter-select">
+          <option value="">All</option>
+          <option value="CRITICAL">Critical</option>
+          <option value="HIGH">High</option>
+          <option value="MEDIUM">Medium</option>
+          <option value="LOW">Low</option>
+        </select>
+      </label>
+      <button id="clear-btn" class="clear-btn">Clear</button>
+    </div>
+  </div>
+
+  <div class="feed-table-wrap">
+    <table class="feed-table">
+      <colgroup><col /><col /><col /><col /><col /><col /><col /><col /></colgroup>
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Source</th>
+          <th>Destination</th>
+          <th>Score</th>
+          <th>Severity</th>
+          <th>Segment</th>
+          <th>Explanation</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="feed-body">
+        <tr class="feed-empty-row" id="empty-row">
+          <td colspan="8">Waiting for anomaly detections...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- DETAIL PANEL -->
+<div class="detail-overlay" id="detail-overlay"></div>
+<aside class="detail-panel" id="detail-panel">
+  <div class="detail-header">
+    <span class="detail-title">Anomaly Detail</span>
+    <button class="detail-close" id="detail-close">&#x2715;</button>
+  </div>
+  <div class="detail-body" id="detail-body"></div>
+</aside>
+
+<script src="/static/js/dashboard.js"></script>
+</body>
+</html>
