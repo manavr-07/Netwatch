@@ -7,3 +7,4 @@ pandas>=2.0.0
 scipy>=1.11.0
 sqlite3  # built-in
 threading  # built-in
+gunicorn
